@@ -9,7 +9,7 @@ Command Line Examples
 The command below assumes there is a file called `factory_lrg`, which is the pre-existing PKCS12 with a password of `changeit` without the single quotes.
 
 ----
-./certifierUtil -m 128 -X X509 -k ./factory_lrg -p changeit
+./certifierUtil get-crt -X X509 -k ./factory_lrg -p changeit
 ----
 
 This command could also be invoked from `./tests/functional/create_x509_crt.sh`.  Example -
@@ -35,13 +35,25 @@ Sample output -
 The command below , passes in the contents of the `base64_data` from the command above (create x509 crt).   This command will make an HTTPS call to certifier and will create a brand new password-protected PKCS12 file that contains the certificate chain returned and public/private key pair. `libcertifier.cfg` must be present and have valid values.
 
 ----
+./certifierUtil get-cert -f -T <base64_data>
+----
+
+This command could also be invoked from `./tests/functional/test-device-reg.sh`. Example:
+
+----
 cd ./tests/functional
 ./test-device-reg.sh <base64_data>
 ----
 
 *Fetch an X509 cert end-to-end*
 
-The command below combines both examples above into a single script.  Python3 is required to run this script.
+The command below combines both examples above into a single call.
+
+----
+./certifierUtil get-crt -F -f -X X509 -k ./factory_lrg -p changeit
+----
+
+This command could also be invoked from `./tests/functional/test-fetch-cert-e2e.sh`, which combines both examples above into a single script.  Python3 is required to run this script.
 
 ----
 cd ./tests/functional
@@ -53,122 +65,281 @@ cd ./tests/functional
 *Get Certificate Status*
 
 ----
-./certifierUtil -m 4096
+./certifierUtil get-cert-status -k <pkcs12-file-path>
 ----
 
 *Renew Certificate*
 
 ----
-./certifierUtil -m 8192
+./certifierUtil renew-cert [-k <pkcs12-file-path>]
 ----
 
 *Print Certificate (B64 of DER)*
 
 ----
-./certifierUtil -m 16384
+./certifierUtil print-cert -k <pkcs12-file-path>
 ----
 
 *Register an app*
 
 ----
-./certifierUtil -c -f -S '<auth_token>'
+./certifierUtil get-cert -c -f -S '<auth_token>'
 ----
 
-*Create Node Address*
-
-----
-./certifierUtil -m 32 -O "<value>"
-----
-
-== *certifierUtil options*
+== *certifierUtil commands*
 
 |===
-| *Long Option* | *Short Option* | *Examples*
+| *Command* | *Description*
+
+| help
+| Display this summary
+
+| version
+| Display version info
+
+| get-cert
+| Fetch Certificate from PKI
+
+| get-crt
+| Generate Base64 CRT Token
+
+| get-cert-status
+| Check validity of certificate
+
+| renew-cert
+| Renew certificate's validity period if expired
+
+| print-cert
+| Display leaf certificate's PEM Base64 data
+|===
+
+== *certifierUtil get-cert options*
+
+|===
+| *Long Option* | *Short Option* | *Examples* | *Description*
 
 | help
 | h
-| -help*   h
-
-| version
-| V
-| -version -V
+| --help -h
+| Display this summary
 
 | overwrite-p12-file
 | f
-| -overwrite-p12-file -f
+| --overwrite-p12-file -f
+| Overwrite P12 File
 
 | client
 | c
-| -client -c
+| --client -c
+| Mark request for a Client App
 
 | pkcs12-password
 | p
-| -pkcs12-password [value] +
--p [value] +
+| --pkcs12-password <value> +
+-p <value> +
 (Defaults to 'changeit' if not supplied)
+| Password to decrypt input P12 File
 
 | config
 | L
-| -config [value] +
--L [value] +
+| --config <value> +
+-L <value> +
 (Defaults to 'libcertifier.cfg' if not supplied)
-
-| mode
-| m
-| -mode [integer value] +
--m [integer value]
+| Pass in custom set of configurations for commandline utility
 
 | crt
 | T
-| -crt <crt>
+| --crt <crt>
+| Input CRT (Base64)
 
-| crt-type
-| X
-| -crt-type <crt-type>
-
-| system-id
-| M
-| -system-id [id] +
+| node-id
+| n
+| --node-id <id> +
  +
-*   M [id]
+-n <id>
+| Choose NodeID (64-bit integer) to be assigned to the resulting certificate
 
 | auth-token
 | S
-| -auth-token [value] +
+| --auth-token <value> +
  +
--S [value]
-
-| output-node
-| O
-| -output-node [value] +
- +
--O [value]
-
-| target-node
-| t
-| -target-node [value] +
- +
--t [value]
-
-| action
-| a
-| -action [value] +
- +
--a [value]
-
-| input-node
-| i
-| -input-node [value] +
--i [value]
+-S <value>
+| Pass in App Authentication Token
 
 | pkcs12-path
 | k
-| -pkcs12-path [value] +
--k [value]
-
-| custom-property
-| D
-| -custom-property [name=value,name=value] +
+| --pkcs12-path <value> +
  +
--D [name=value,name=value]
+-k <value>
+| Path to the PKCS12 File
+
+|===
+
+== *certifierUtil get-crt options*
+
+|===
+| *Long Option* | *Short Option* | *Examples* | *Description*
+
+| help
+| h
+| --help -h
+| Display this summary
+
+| overwrite-p12-file
+| f
+| --overwrite-p12-file -f
+| Overwrite P12 File
+
+| fetch
+| F
+| --fetch -F
+| Activate this option if resulting CRT
+
+| pkcs12-password
+| p
+| --pkcs12-password <value> +
+-p <value> +
+(Defaults to 'changeit' if not supplied)
+| Password to decrypt input P12 File
+
+| config
+| L
+| --config <value> +
+-L <value> +
+(Defaults to 'libcertifier.cfg' if not supplied)
+| Pass in custom set of configurations for commandline utility
+
+| crt-type
+| X
+| --crt-type <crt-type>
+| Select Output CRT Type (X509 or other values)
+
+| node-id
+| n
+| --node-id <id> +
+ +
+-n <id>
+| Choose NodeID (64-bit integer) to be assigned to the resulting certificate
+
+| auth-token
+| S
+| --auth-token <value> +
+ +
+-S <value>
+| Pass in App Authentication Token
+
+| pkcs12-path
+| k
+| --pkcs12-path <value> +
+ +
+-k <value>
+| Path to the PKCS12 File
+
+| client
+| c
+| --client -c
+| Mark request for a Client App
+
+|===
+
+== *certifierUtil get-cert-status options*
+
+|===
+| *Long Option* | *Short Option* | *Examples* | *Description*
+
+| help
+| h
+| --help -h
+| Display this summary
+
+| pkcs12-password
+| p
+| --pkcs12-password <value> +
+-p <value> +
+(Defaults to 'changeit' if not supplied)
+| Password to decrypt input P12 File
+
+| pkcs12-path
+| k
+| --pkcs12-path <value> +
+ +
+-k <value>
+| Path to the PKCS12 File
+
+|===
+
+== *certifierUtil renew-cert options*
+
+|===
+| *Long Option* | *Short Option* | *Examples* | *Description*
+
+| help
+| h
+| --help -h
+| Display this summary
+
+| pkcs12-password
+| p
+| --pkcs12-password <value> +
+-p <value> +
+(Defaults to 'changeit' if not supplied)
+| Password to decrypt input P12 File
+
+| pkcs12-path
+| k
+| --pkcs12-path <value> +
+ +
+-k <value>
+| Path to the PKCS12 File
+
+| config
+| L
+| --config <value> +
+-L <value> +
+(Defaults to 'libcertifier.cfg' if not supplied)
+| Pass in custom set of configurations for commandline utility
+
+| client
+| c
+| --client -c
+| Mark request for a Client App
+
+|===
+
+== *certifierUtil print-cert options*
+
+|===
+| *Long Option* | *Short Option* | *Examples* | *Description*
+
+| help
+| h
+| --help -h
+| Display this summary
+
+| pkcs12-password
+| p
+| --pkcs12-password <value> +
+-p <value> +
+(Defaults to 'changeit' if not supplied)
+| Password to decrypt input P12 File
+
+| pkcs12-path
+| k
+| --pkcs12-path <value> +
+ +
+-k <value>
+| Path to the PKCS12 File
+
+| config
+| L
+| --config <value> +
+-L <value> +
+(Defaults to 'libcertifier.cfg' if not supplied)
+| Pass in custom set of configurations for commandline utility
+
+| client
+| c
+| --client -c
+| Mark request for a Client App
+
 |===
