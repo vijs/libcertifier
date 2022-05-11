@@ -1175,6 +1175,7 @@ char* certifier_create_csr_post_data(CertifierPropMap *props,
     JSON_Object *root_object = json_value_get_object(root_value);
     char *serialized_string = NULL;
 
+    const char *node_id = property_get(props, CERTIFIER_OPT_NODE_ID);
     const char *system_id = property_get(props, CERTIFIER_OPT_SYSTEM_ID);
     const char *mac_address = property_get(props, CERTIFIER_OPT_MAC_ADDRESS);
     size_t  num_days   = (size_t) property_get(props, CERTIFIER_OPT_NUM_DAYS);
@@ -1182,6 +1183,7 @@ char* certifier_create_csr_post_data(CertifierPropMap *props,
 
     json_object_set_string(root_object, "csr", (const char *) csr);
     json_object_set_string(root_object, "nodeAddress", node_address);
+    json_object_set_string(root_object, "nodeId", node_id);
 
     if (util_is_not_empty(system_id))
     {
@@ -1231,4 +1233,3 @@ char* certifier_create_csr_post_data(CertifierPropMap *props,
 
     return json_csr;
 }
-

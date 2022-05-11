@@ -89,7 +89,8 @@ typedef enum CERTIFIER_OPT
         CERTIFIER_OPT_TARGET_NODE = 25,
         CERTIFIER_OPT_ACTION = 26,
         CERTIFIER_OPT_INPUT_NODE = 27,
-        // 28 - 36 are unused
+        CERTIFIER_OPT_NODE_ID = 28,
+        // 29 - 36 are unused
         CERTIFIER_OPT_LOG_MAX_SIZE = 37,
         // 38,39 are unused
         // 40 - 43 are unused
@@ -196,5 +197,9 @@ typedef enum {
 /**
  * @}
  */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* PROPERTY_H */

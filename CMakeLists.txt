@@ -25,6 +25,7 @@ option(ENABLE_TESTS "Build unit tests (requires cmocka to be enabled or defaults
 option(ENABLE_CMOCKA "Enables CMOCKA for unit tests (requires cmocka)" OFF)
 option(ENABLE_COVERAGE "Collect code coverage report with unit tests" OFF)
 option(ENABLE_MBEDTLS "Build with mBedTLS support instead of OpenSSL" OFF)
+option(ENABLE_MATTER_EXAMPLES "Build Matter SDK libCertifier Examples" OFF)
 
 option(ENABLE_CMAKE_VERBOSE_MAKEFILE OFF)
 
@@ -314,6 +315,42 @@ if (${ENABLE_TESTS})
         APPEND_COVERAGE_COMPILER_FLAGS()
         SETUP_TARGET_FOR_COVERAGE_LCOV(NAME ${PROJECT_NAME}_coverage EXECUTABLE ctest DEPENDENCIES ${PROJECT_NAME})
     endif ()
+endif ()
+
+if (${ENABLE_MATTER_EXAMPLES})
+    add_custom_command(
+        TARGET certifier
+        POST_BUILD
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/matter_plugin
+        COMMAND gn gen --check out/host
+        COMMAND ninja -C out/host
+    )
+    add_custom_command(
+        TARGET certifier
+        POST_BUILD
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/matter_plugin/out/host
+        COMMAND cp certifier-tool ${CMAKE_CURRENT_BINARY_DIR}
+    )
+
+    add_custom_command(
+        TARGET certifier
+        POST_BUILD
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/certifier-all-clusters-app
+        COMMAND gn gen --check out/host
+        COMMAND ninja -C out/host
+    )
+    add_custom_command(
+        TARGET certifier
+        POST_BUILD
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/certifier-all-clusters-app/out/host
+        COMMAND cp certifier-all-clusters-app ${CMAKE_CURRENT_BINARY_DIR}
+    )
+    add_custom_command(
+        TARGET certifier
+        POST_BUILD
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/certifier-all-clusters-app/
+        COMMAND cp trafficlight ${CMAKE_CURRENT_BINARY_DIR}
+    )
 endif ()
 
 install(TARGETS certifier LIBRARY DESTINATION lib)

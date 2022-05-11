@@ -22,6 +22,6 @@
   "libcertifier.certificate.lite": 1,
   "libcertifier.system.id":"BBBBBBBBBBBBBBBB",
   "libcertifier.cn.name":"AAAAAAAAAAAAAAAA",
+  "libcertifier.node.id":"CCCCCCCCCCCCCCCC",
   "libcertifier.ext.key.usage":"critical,clientAuth,serverAuth"
 }
-

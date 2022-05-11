@@ -63,6 +63,7 @@ struct _PropMap {
     char *password;
     char *certifier_id;
     char *system_id;
+    char *node_id;
     char *mac_address;
     char *crt;
     char *source;
@@ -253,6 +254,10 @@ property_set(CertifierPropMap *prop_map, CERTIFIER_OPT name, const void *value) 
         SV(prop_map->system_id, value);
             break;
 
+        case CERTIFIER_OPT_NODE_ID:
+        SV(prop_map->node_id, value);
+            break;
+
         case CERTIFIER_OPT_MAC_ADDRESS:
         SV(prop_map->mac_address, value);
             break;
@@ -418,6 +423,10 @@ property_get(CertifierPropMap *prop_map, CERTIFIER_OPT name) {
 
         case CERTIFIER_OPT_SYSTEM_ID:
             retval = prop_map->system_id;
+            break;
+
+        case CERTIFIER_OPT_NODE_ID:
+            retval = prop_map->node_id;
             break;
 
         case CERTIFIER_OPT_MAC_ADDRESS:
@@ -698,6 +707,7 @@ property_set_defaults_from_cfg_file(CertifierPropMap *propMap) {
     const char *crt_type_value = NULL;
     const char *password_value = NULL;
     const char *system_id_value = NULL;
+    const char *node_id_value = NULL;
     int http_timeout_value;
     int http_connect_timeout_value;
     int http_trace_value;
@@ -768,6 +778,12 @@ property_set_defaults_from_cfg_file(CertifierPropMap *propMap) {
     if (system_id_value) {
         log_info("Loaded system_id_value: %s from config file.", system_id_value);
         property_set(propMap, CERTIFIER_OPT_SYSTEM_ID, system_id_value);
+    }
+
+    node_id_value = json_object_get_string(json_object(json), "libcertifier.node.id");
+    if (node_id_value) {
+        log_info("Loaded node_id_value: %s from config file.", node_id_value);
+        property_set(propMap, CERTIFIER_OPT_NODE_ID, node_id_value);
     }
 
     http_timeout_value = json_object_get_number(json_object(json), "libcertifier.http.timeout");
@@ -929,6 +945,7 @@ static void free_prop_map_values(CertifierPropMap *prop_map) {
     FV(prop_map->password);
     FV(prop_map->certifier_id);
     FV(prop_map->system_id);
+    FV(prop_map->node_id);
     FV(prop_map->mac_address);
     FV(prop_map->crt);
     FV(prop_map->ecc_curve_id);
