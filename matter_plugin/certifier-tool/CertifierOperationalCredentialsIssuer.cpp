@@ -150,15 +150,15 @@ CHIP_ERROR CertifierOperationalCredentialsIssuer::GenerateNOCChain(const ByteSpa
     reader.ExitContainer(containerType);
 
     chip::Platform::ScopedMemoryBuffer<uint8_t> noc;
-    ReturnErrorCodeIf(!noc.Alloc(kMaxDERCertLength), CHIP_ERROR_NO_MEMORY);
+    VerifyOrReturnError(noc.Alloc(kMaxDERCertLength), CHIP_ERROR_NO_MEMORY);
     MutableByteSpan nocSpan(noc.Get(), kMaxDERCertLength);
 
     chip::Platform::ScopedMemoryBuffer<uint8_t> icac;
-    ReturnErrorCodeIf(!icac.Alloc(kMaxDERCertLength), CHIP_ERROR_NO_MEMORY);
+    VerifyOrReturnError(icac.Alloc(kMaxDERCertLength), CHIP_ERROR_NO_MEMORY);
     MutableByteSpan icacSpan(icac.Get(), kMaxDERCertLength);
 
     chip::Platform::ScopedMemoryBuffer<uint8_t> rcac;
-    ReturnErrorCodeIf(!rcac.Alloc(kMaxDERCertLength), CHIP_ERROR_NO_MEMORY);
+    VerifyOrReturnError(rcac.Alloc(kMaxDERCertLength), CHIP_ERROR_NO_MEMORY);
     MutableByteSpan rcacSpan(rcac.Get(), kMaxDERCertLength);
 
     uint8_t nonceBuffer[chip::Controller::kCSRNonceLength];
@@ -168,7 +168,7 @@ CHIP_ERROR CertifierOperationalCredentialsIssuer::GenerateNOCChain(const ByteSpa
 
     ReturnErrorOnFailure(GenerateNOCChainAfterValidation(mNodeId, mFabricId, csr, certifierNonce, rcacSpan, icacSpan, nocSpan));
 
-    ReturnErrorCodeIf(mIpkSpan.HasValue() == false, CHIP_ERROR_INTERNAL);
+    VerifyOrReturnError(mIpkSpan.HasValue() != false, CHIP_ERROR_INTERNAL);
 
     // The below static assert validates a key assumption in types used (needed for public API conformance)
     static_assert(CHIP_CRYPTO_SYMMETRIC_KEY_LENGTH_BYTES == kAES_CCM128_Key_Length, "IPK span sizing must match");

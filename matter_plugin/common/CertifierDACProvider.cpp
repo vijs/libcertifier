@@ -70,7 +70,7 @@ CHIP_ERROR CertifierDACProvider::GetProductAttestationIntermediateCert(MutableBy
     error = security_get_X509_PKCS12_file(GetDACFilepath(), GetDACPassword(), certs, nullptr, nullptr);
     VerifyOrReturnError(error.application_error_code == 0 && error.library_error_code == 0, CHIP_ERROR_INTERNAL);
 
-    cert = security_cert_list_get(certs, 1);
+    cert = security_cert_list_get(certs, 0);
 
     size_t der_len      = 0;
     unsigned char * der = security_X509_to_DER(cert, &der_len);

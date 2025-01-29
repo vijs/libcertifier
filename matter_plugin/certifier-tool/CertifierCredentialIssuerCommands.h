@@ -42,9 +42,10 @@ private:
         return CHIP_NO_ERROR;
     }
     CHIP_ERROR SetupDeviceAttestation(chip::Controller::SetupParams & setupParams,
-                                      const chip::Credentials::AttestationTrustStore * trustStore) override
+                                      const chip::Credentials::AttestationTrustStore * trustStore,
+                                      chip::Credentials::DeviceAttestationRevocationDelegate * revocationDelegate) override
     {
-        ReturnErrorOnFailure(ExampleCredentialIssuerCommands::SetupDeviceAttestation(setupParams, trustStore));
+        ReturnErrorOnFailure(ExampleCredentialIssuerCommands::SetupDeviceAttestation(setupParams, trustStore, revocationDelegate));
 
         chip::Credentials::SetDeviceAttestationCredentialsProvider(chip::Credentials::Certifier::GetDACProvider());
 
@@ -56,7 +57,7 @@ private:
                                           chip::Crypto::P256Keypair & keypair, chip::MutableByteSpan & rcac,
                                           chip::MutableByteSpan & icac, chip::MutableByteSpan & noc) override
     {
-        uint8_t csrBuffer[chip::Crypto::kMAX_CSR_Length];
+        uint8_t csrBuffer[chip::Crypto::kMIN_CSR_Buffer_Size];
         size_t csrBufferLength = sizeof(csrBuffer);
         uint8_t nonceBuffer[chip::Controller::kCSRNonceLength];
         chip::MutableByteSpan nonceSpan(nonceBuffer);

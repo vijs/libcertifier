@@ -28,18 +28,24 @@ This is the first executable/target that should be run. This application will ac
 
 Commissioner will interact with the cloud PKI and retrieve Matter NOC certificates for both to the Commissioner (during initialization) and Commissionee (during Matter Commissioning Flow), using either X.509 or SAT authentication.
 
-Once the Commissionee application is running, run `certifier-tool` with the following parameters:
+Once the Commissionee application is running, launch an interactive `certifier-tool` shell:
+
+----
+./certifier-tool interactive start --paa-trust-store-path ../matter_sdk/credentials/development/paa-root-certs
+----
+
+Then, to comission a device there are two alternatives shown in the subsequent subsections.
 
 X.509 authentication:
 
 ----
-./certifier-tool pairing onnetwork-certifier 0x12 20202021 --paa-trust-store-path ../matter_sdk/credentials/development/paa-root-certs --input-p12-path dac-commissioner.p12 --input-p12-password changeit
+pairing onnetwork-certifier 0x12 20202021 --input-p12-path dac-commissioner.p12 --input-p12-password changeit
 ----
 
 SAT authentication:
 
 ----
-./certifier-tool pairing onnetwork-certifier 0x12 20202021 --paa-trust-store-path ../matter_sdk/credentials/production/paa-root-certs --sat 1 --sat-token <token>
+pairing onnetwork-certifier 0x12 20202021 --sat 1 --sat-token <token>
 ----
 
 Instead of passing SAT as a command line parameter, it can be added to the `libcertifier.cfg` file as indicated below:
@@ -51,11 +57,11 @@ Instead of passing SAT as a command line parameter, it can be added to the `libc
 Then, run `certifier-tool` with the following parameters:
 
 ----
-./certifier-tool pairing onnetwork-certifier 0x12 20202021 --paa-trust-store-path ../matter_sdk/credentials/production/paa-root-certs --sat 1
+pairing onnetwork-certifier 0x12 20202021 --paa-trust-store-path ../matter_sdk/credentials/production/paa-root-certs --sat 1
 ----
 
 After successfully commissioning the device, execute the following to send a Toggle command to a lighting device:
 
 ----
-./certifier-tool onoff toggle 0x12 1 --paa-trust-store-path ../matter_sdk/credentials/development/paa-root-certs --input-p12-path dac-commissioner.p12 --input-p12-password changeit
+onoff toggle 0x12 1
 ----

@@ -3,10 +3,25 @@
 git submodule update --init
 pushd .
 cd ./matter_sdk
-git submodule update --init
+./scripts/checkout_submodules.py --shallow --platform  linux
 source ./scripts/activate.sh
 popd
-source ./matter_sdk/scripts/bootstrap.sh
+
+# cd matter_plugin/certifier-tool
+# rm -rf out
+# sync main.cpp
+# sync BUILD.gn
+# remove all symbolic links
+# for d in ../../matter_sdk/examples/chip-tool/*; do ln -s "$d" './'; done
+# for d in ../../matter_sdk/examples/chip-tool/.*; do ln -s "$d" './'; done
+# cd ../../matter_plugin/certifier-all-clusters-app
+# rm -rf out
+# sync main.cpp
+# sync BUILD.gn
+# remove all symbolic links
+# for d in ../../matter_sdk/examples/all-clusters-app/linux/*; do ln -s "$d" './'; done
+# for d in ../../matter_sdk/examples/all-clusters-app/linux/.*; do ln -s "$d" './'; done
+# cd ../..
 
 mkdir -p build
 cd build
@@ -19,11 +34,11 @@ cp build/libcertifier.a ./matter_plugin/certifier-all-clusters-app
 pushd .
 
 cd build
-./certifierUtil get-cert -f -k seed.p12 -p changeit -o dac-commissioner.p12 --product-id 1101 --profile-name XFN_AS_PAI_1
-./certifierUtil get-cert -f -k seed.p12 -p changeit -o dac-commissionee.p12 --product-id 1101 --profile-name XFN_AS_PAI_1
+./certifierUtil get-cert -f -k seed.p12 -p changeit -o dac-commissioner.p12 --product-id 4353 --profile-name XFN_DL_PAI_1_Class_3
+./certifierUtil get-cert -f -k seed.p12 -p changeit -o dac-commissionee.p12 --product-id 4353 --profile-name XFN_DL_PAI_1_Class_3
 
 cd ../matter_plugin/certification-declaration-gen
-make install all PRODUCT_ID=4353
+make install all PRODUCT_ID=4353 VENDOR_ID=65524
 cp *.array ../common/
 
 cd ../certifier-tool

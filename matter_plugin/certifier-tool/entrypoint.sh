@@ -1,0 +1,1 @@
+../../matter_sdk/examples/chip-tool/entrypoint.sh

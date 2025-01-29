@@ -20,9 +20,13 @@
 #include "CertifierOptions.h"
 #include "LightingManager.h"
 #include "binding-handler.h"
-#include "main-common.h"
 
 #include <CertifierDACProvider.h>
+
+// Network commissioning
+namespace {
+constexpr chip::EndpointId kNetworkCommissioningEndpointSecondary = 0xFFFE;
+} // anonymous namespace
 
 void MatterPostAttributeChangeCallback(const chip::app::ConcreteAttributePath & attributePath, uint8_t type, uint16_t size,
                                        uint8_t * value)
@@ -36,7 +40,7 @@ void MatterPostAttributeChangeCallback(const chip::app::ConcreteAttributePath & 
 
 int main(int argc, char * argv[])
 {
-    VerifyOrDie(ChipLinuxAppInit(argc, argv, CertifierOptions::GetOptions()) == 0);
+    VerifyOrDie(ChipLinuxAppInit(argc, argv, CertifierOptions::GetOptions(), chip::MakeOptional(kNetworkCommissioningEndpointSecondary)) == 0);
     VerifyOrDie(InitBindingHandlers() == CHIP_NO_ERROR);
 
     LightingMgr().Init([]() {
@@ -62,7 +66,6 @@ int main(int argc, char * argv[])
     LinuxDeviceOptions::GetInstance().dacProvider = chip::Credentials::Certifier::GetDACProvider();
 
     ChipLinuxAppMainLoop();
-    ApplicationExit();
 
     return 0;
 }
